@@ -74,3 +74,12 @@ Loosely inspired by [Processing](https://processing.org/).
 - [X] Textures
 - [X] Keyboard
 - [X] Mouse
+
+### Usage
+
+Since the library currently still is in an early stage, I haven't published it to [crate.io](https://crates.io/) yet, but thanks to cargo being awesome, you can include it in your project like this:
+
+```toml
+[dependencies]
+pronto-graphics = {git = "https://github.com/Garbaz/pronto-graphics"}
+```
