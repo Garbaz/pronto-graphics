@@ -74,6 +74,7 @@ Loosely inspired by [Processing](https://processing.org/).
 - [X] Textures
 - [X] Keyboard
 - [X] Mouse
+- [X] Doc comments
 
 ### Usage
 
