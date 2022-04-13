@@ -20,6 +20,7 @@ pub struct Window<'a> {
     window: RenderWindow,
     input_state: InputState,
     render_queue: VecDeque<RenderTask>,
+    background_color: Color,
     color_state: ColorState,
     shape_store: ShapeStore<'a>,
     deltatime_clock: Clock,
@@ -46,11 +47,8 @@ impl Window<'_> {
             window,
             input_state: InputState::new(),
             render_queue: VecDeque::new(),
-            color_state: ColorState {
-                background_color: Color::LIGHT_GRAY,
-                fill_color: Color::WHITE,
-                outline_color: Color::TRANSPARENT,
-            },
+            background_color: Color::LIGHT_GRAY,
+            color_state: Default::default(),
             shape_store: ShapeStore {
                 circle: circle_shape,
                 rectangle: rectangle_shape,
@@ -115,6 +113,8 @@ impl Window<'_> {
 
         self.deltatime = self.deltatime_clock.restart().as_seconds();
         self.runtime = self.runtime_clock.elapsed_time().as_seconds();
+
+        self.color_state = Default::default();
     }
 
     fn update_events(&mut self) {
@@ -132,7 +132,7 @@ impl Window<'_> {
     }
 
     fn update_draw(&mut self) {
-        self.window.clear(self.color_state.background_color.into());
+        self.window.clear(self.background_color.into());
         for task in &self.render_queue {
             let RenderTask {
                 pos,
@@ -181,7 +181,7 @@ impl Window<'_> {
     }
 
     pub fn background_color<C: Into<Color>>(&mut self, color: C) {
-        self.color_state.background_color = color.into();
+        self.background_color = color.into();
     }
 
     pub fn fill_color<C: Into<Color>>(&mut self, color: C) {
@@ -237,7 +237,7 @@ impl Window<'_> {
         })
     }
 
-    pub fn texture_prop(
+    pub fn texture_(
         &mut self,
         pos: (f32, f32),
         texture: Texture,

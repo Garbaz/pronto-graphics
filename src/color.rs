@@ -33,6 +33,16 @@ impl Color {
     pub fn alpha(&self) -> u8 {
         self.sfml_color.alpha()
     }
+
+    pub const TRANSPARENT: Color = Color::rgba(0x00, 0x00, 0x00, 0);
+    pub const BLACK: Color = Color::rgb(0x00, 0x00, 0x00);
+    pub const WHITE: Color = Color::rgb(0xFF, 0xFF, 0xFF);
+    pub const GRAY: Color = Color::rgb(0x80, 0x80, 0x80);
+    pub const DARK_GRAY: Color = Color::rgb(0x40, 0x40, 0x40);
+    pub const LIGHT_GRAY: Color = Color::rgb(0xC0, 0xC0, 0xC0);
+    pub const RED: Color = Color::rgb(0xFF, 0x00, 0x00);
+    pub const GREEN: Color = Color::rgb(0x00, 0xFF, 0xC0);
+    pub const BLUE: Color = Color::rgb(0x00, 0x00, 0xFF);
 }
 
 impl From<Color> for SfmlColor {
@@ -55,19 +65,15 @@ impl From<(u8, u8, u8, u8)> for Color {
 
 #[derive(Clone, Copy)]
 pub struct ColorState {
-    pub background_color: Color,
     pub fill_color: Color,
     pub outline_color: Color,
 }
 
-impl Color {
-    pub const TRANSPARENT: Color = Color::rgba(0x00, 0x00, 0x00, 0);
-    pub const BLACK: Color = Color::rgb(0x00, 0x00, 0x00);
-    pub const WHITE: Color = Color::rgb(0xFF, 0xFF, 0xFF);
-    pub const GRAY: Color = Color::rgb(0x80, 0x80, 0x80);
-    pub const DARK_GRAY: Color = Color::rgb(0x40, 0x40, 0x40);
-    pub const LIGHT_GRAY: Color = Color::rgb(0xC0, 0xC0, 0xC0);
-    pub const RED: Color = Color::rgb(0xFF, 0x00, 0x00);
-    pub const GREEN: Color = Color::rgb(0x00, 0xFF, 0xC0);
-    pub const BLUE: Color = Color::rgb(0x00, 0x00, 0xFF);
+impl Default for ColorState {
+    fn default() -> Self {
+        Self {
+            fill_color: Color::WHITE,
+            outline_color: Color::TRANSPARENT,
+        }
+    }
 }
