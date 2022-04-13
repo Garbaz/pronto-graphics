@@ -26,7 +26,7 @@ loop {
 
     pg.outline_color(Color::BLACK);
     pg.fill_color((0x1D, 0x37, 0x85));
-    pg.rectangle((300., 450.), 100., 120.);
+    pg.square((300., 450.), 100.);
 
     pg.update();
 }
@@ -44,7 +44,7 @@ loop {
 }
 ```
 
-Want to press some keys and click some places?
+Want to press some keys and click some buttons?
 
 ```rust
 let mut pg = Window::new_fullscreen();
@@ -61,7 +61,9 @@ loop {
 }
 ```
 
-A library for anyone who just wants to get some graphics on the screen, without having to faff about with the technical details of graphics libraries. Just create a window, and start drawing to it.
+## Idea
+
+A library for anyone who just wants to get some graphics on the screen, without having to faff about with the technical details of graphics libraries. Just create a window, and start drawing to it. Minimal setup, minimal bother, minimal interference with your code's structure.
 
 Loosely inspired by [Processing](https://processing.org/).
 
