@@ -16,6 +16,18 @@ use crate::{
     texture::{Texture, TEXTURES},
 };
 
+/// The core type of the Pronto Graphics library.
+/// All drawing and keyboard/mouse interaction happens through an instance of `Window`.
+/// It has to be updated every frame  with `.update()` for drawings to be rendered and the keyboard/mouse state to be updated.
+/// 
+/// # Examples
+/// ```
+/// let mut pg = Window::new(800, 600, "Window Title"); // Create window
+/// loop {
+///     pg.circle((200,200), 50); // Draw to it
+///     pg.update(); // Update for drawing to appear
+/// }
+/// ```
 pub struct Window<'a> {
     window: RenderWindow,
     input_state: InputState,
@@ -64,13 +76,6 @@ impl Window<'_> {
     /// Create a new window of size (`width`, `height`) and with title `name`.
     /// Can be directly drawn to with functions like `.circle(...)`
     /// and has to be updated with `.update()`.
-    ///
-    /// # Examples
-    /// ```
-    /// let mut pg = Window::new(400, 400, "Window Title"); // Create window
-    /// pg.circle((200,200), 50); // Draw to it
-    /// pg.update(); // Update for circle to appear
-    /// ```
     pub fn new(width: u32, height: u32, name: &str) -> Self {
         let mut window = RenderWindow::new(
             (width, height),
@@ -87,13 +92,6 @@ impl Window<'_> {
     /// Create a new fullscreen window.
     /// Can be directly drawn to with functions like `.circle(...)`
     /// and has to be updated with `.update()`.
-    ///
-    /// # Examples
-    /// ```
-    /// let mut pg = Window::new_fullscreen(); // Create window
-    /// pg.circle((200,200), 50); // Draw to it
-    /// pg.update(); // Update for circle to appear
-    /// ```
     pub fn new_fullscreen() -> Self {
         let mut window = RenderWindow::new(
             VideoMode::desktop_mode(),
@@ -107,6 +105,8 @@ impl Window<'_> {
         Self::new_from_window(window)
     }
 
+    /// Has to be called every frame for drawings to appear on the screen and keyboard/mouse to be updated.
+    /// Note that this function will block for vertical sync.
     pub fn update(&mut self) {
         self.update_events();
         self.update_draw();
@@ -180,18 +180,26 @@ impl Window<'_> {
         self.window.display();
     }
 
+    /// Set the background color of the window.
+    /// The background color does _not_ reset at the beginning of a new frame.
     pub fn background_color<C: Into<Color>>(&mut self, color: C) {
         self.background_color = color.into();
     }
 
+    /// Set the fill color for drawing shapes like `.circle(...)`.
+    /// The fill color is reset at the beginning of a new frame to a default value of `Color::WHITE`.
     pub fn fill_color<C: Into<Color>>(&mut self, color: C) {
         self.color_state.fill_color = color.into();
     }
 
+    /// Set the outline color for drawing shapes like `.circle(...)`.
+    /// The outline color is reset at the beginning of a new frame to a default value of `Color::TRANSPARENT`.
     pub fn outline_color<C: Into<Color>>(&mut self, color: C) {
         self.color_state.outline_color = color.into();
     }
 
+    /// Draw a circle at position `pos` with radius `radius`.
+    /// The origin of the circle is at it's center.
     pub fn circle(&mut self, pos: (f32, f32), radius: f32) {
         self.render_queue.push_back(RenderTask {
             pos,
@@ -200,6 +208,8 @@ impl Window<'_> {
         })
     }
 
+    /// Draw a rectangle at position `pos` with width and height of `(width, height)`.
+    /// The origin of the rectangle is at it's top left.
     pub fn rectangle(&mut self, pos: (f32, f32), width: f32, height: f32) {
         self.render_queue.push_back(RenderTask {
             pos,
@@ -208,6 +218,8 @@ impl Window<'_> {
         })
     }
 
+    /// Draw a square at position `pos` with a width and height of `size`.
+    /// The origin of the square is at it's top left.
     pub fn square(&mut self, pos: (f32, f32), size: f32) {
         self.render_queue.push_back(RenderTask {
             pos,
@@ -219,6 +231,19 @@ impl Window<'_> {
         })
     }
 
+    /// Draw a texture `texture` at position `pos` with width and height of `(width, height)`.
+    /// The origin of the texture is at it's top left.
+    /// Textures can be loaded with `.load_texture(...)`.
+    /// # Examples
+    /// ```
+    /// let mut pg = Window::new_fullscreen();
+    /// let my_texture = pg.load_texture("my_texture.png").unwrap();
+    /// loop {
+    ///     pg.texture((100., 250.), my_texture, 100., 150.);
+    ///
+    ///     pg.update();
+    /// }
+    /// ```
     pub fn texture(
         &mut self,
         pos: (f32, f32),
@@ -237,12 +262,20 @@ impl Window<'_> {
         })
     }
 
-    pub fn texture_(
-        &mut self,
-        pos: (f32, f32),
-        texture: Texture,
-        width: f32,
-    ) {
+    /// Draw a texture `texture` at position `pos` with width of `width`, with the height according to the aspect ratio of the texture.
+    /// The origin of the texture is at it's top left.
+    /// Textures can be loaded with `.load_texture(...)`.
+    /// # Examples
+    /// ```
+    /// let mut pg = Window::new_fullscreen();
+    /// let my_texture = pg.load_texture("my_texture.png").unwrap();
+    /// loop {
+    ///     pg.texture_((100., 250.), my_texture, 100.);
+    ///
+    ///     pg.update();
+    /// }
+    /// ```
+    pub fn texture_(&mut self, pos: (f32, f32), texture: Texture, width: f32) {
         self.render_queue.push_back(RenderTask {
             pos,
             shape: Shapes::Texture {
@@ -254,47 +287,99 @@ impl Window<'_> {
         })
     }
 
+    /// Whether the keyboard key `key` is currently held pressed.
+    /// # Examples
+    /// ```
+    /// if pg.key_pressed(Key::SPACE) {
+    ///     /*...*/
+    /// }
+    /// ```
     pub fn key_pressed(&self, key: Key) -> bool {
         self.input_state.key_pressed(key)
     }
+
+    /// Whether they keyboard key `key` has just been pressed in this frame.
+    /// # Examples
+    /// ```
+    /// if pg.key_just_pressed(Key::SPACE) {
+    ///     /*...*/
+    /// }
+    /// ```
     pub fn key_just_pressed(&self, key: Key) -> bool {
         self.input_state.key_just_pressed(key)
     }
+
+    /// Whether the mouse button `button` is currently held pressed.
+    /// # Examples
+    /// ```
+    /// if pg.mouse_pressed(Button::LEFT) {
+    ///     /*...*/
+    /// }
+    /// ```
     pub fn mouse_pressed(&self, button: Button) -> bool {
         self.input_state.mouse_pressed(button)
     }
+
+    /// Whether the mouse button `button`  has just been pressed in this frame.
+    /// # Examples
+    /// ```
+    /// if pg.mouse_just_pressed(Button::LEFT) {
+    ///     /*...*/
+    /// }
+    /// ```
     pub fn mouse_just_pressed(&self, button: Button) -> bool {
         self.input_state.mouse_just_pressed(button)
     }
 
+    /// The current mouse position inside the window.
     pub fn mouse_position(&self) -> (f32, f32) {
         self.input_state.mouse_position()
     }
 
+    /// The current cumulative scroll wheel state of the mouse.
     pub fn mouse_wheel(&self) -> f32 {
         self.input_state.mouse_wheel()
     }
 
+    /// How much the scroll wheel has been scrolled in this frame.
     pub fn mouse_wheel_delta(&self) -> f32 {
         self.input_state.mouse_wheel_delta()
     }
 
+    /// The width of the window, or the width of the screen in fullscreen mode.
     pub fn width(&self) -> f32 {
         self.window.size().x as f32
     }
 
+    /// The height of the window, or the height of the screen in fullscreen mode.
     pub fn height(&self) -> f32 {
         self.window.size().y as f32
     }
 
+    /// The time since the window has been created in seconds.
     pub fn time(&self) -> f32 {
         self.runtime
     }
 
+    /// How much time has passed since the last frame.
     pub fn deltatime(&self) -> f32 {
         self.deltatime
     }
 
+    /// Load a texture from path `path`.
+    /// A return value of `None` means that the texture could not be loaded.
+    /// On success, returns a `Texture` object that can be passed to the `.texture(...)` function to draw the texture to the screen.
+    /// 
+    /// # Examples
+    /// ```
+    /// let mut pg = Window::new_fullscreen();
+    /// let my_texture = pg.load_texture("my_texture.png").unwrap();
+    /// loop {
+    ///     pg.texture_((100., 250.), my_texture, 100.);
+    ///
+    ///     pg.update();
+    /// }
+    /// ```
     pub fn load_texture(&mut self, path: &str) -> Option<Texture> {
         unsafe {
             if let Some(textures) = &mut TEXTURES {

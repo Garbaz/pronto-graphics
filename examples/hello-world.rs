@@ -25,7 +25,7 @@ fn main() {
         pg.texture_((10., 10.), texture, 100.);
 
         if pg.mouse_pressed(Button::LEFT) {
-            pg.fill_color(Color::BLUE);
+            pg.fill_color(Color::BLUE.with_alpha(127));
             pg.circle(pg.mouse_position(), 16.);
         }
 

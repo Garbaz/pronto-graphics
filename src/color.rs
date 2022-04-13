@@ -1,35 +1,60 @@
 use sfml::graphics::Color as SfmlColor;
 
+/// A object representing a color in RGBA format.
+/// Red/Green/Blue/Alpha each range from 0 to 255.
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub struct Color {
     sfml_color: SfmlColor,
 }
 
 impl Color {
+    /// Create a `Color` from `red`, `green` and `blue`.
+    /// # Examples
+    /// ```
+    /// let color = Color::rgb(0x1D, 0x37, 0x85);
+    /// ```
     pub const fn rgb(red: u8, green: u8, blue: u8) -> Self {
         Color {
             sfml_color: SfmlColor::rgb(red, green, blue),
         }
     }
 
+    /// Create a `Color` from `red`, `green`, `blue` and `alpha`.
+    /// # Examples
+    /// ```
+    /// let color = Color::rgba(0x1D, 0x37, 0x85, 127);
+    /// ```
     pub const fn rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
         Color {
             sfml_color: SfmlColor::rgba(red, green, blue, alpha),
         }
     }
+    
+    /// Create a `Color` from an existing color with alpha set to `alpha`.
+    /// # Examples
+    /// ```
+    /// let color = Color::BLUE.with_alpha(127);
+    /// ```
+    pub fn with_alpha(self, alpha: u8) -> Self {
+        Self::rgba(self.red(), self.green(), self.blue(), alpha)
+    }
 
+    /// The `red` component of the color.
     pub fn red(&self) -> u8 {
         self.sfml_color.red()
     }
 
+    /// The `green` component of the color.
     pub fn green(&self) -> u8 {
         self.sfml_color.green()
     }
 
+    /// The `blue` component of the color.
     pub fn blue(&self) -> u8 {
         self.sfml_color.blue()
     }
 
+    /// The `alpha` component of the color.
     pub fn alpha(&self) -> u8 {
         self.sfml_color.alpha()
     }
