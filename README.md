@@ -45,7 +45,7 @@ Want to press some keys and click some buttons?
 let mut pg = Window::new_fullscreen();
 loop {
     if pg.key_just_pressed(Key::SPACE) {
-            println!("Action!");
+        println!("Action!");
     }
 
     if pg.mouse_pressed(Button::LEFT) {
