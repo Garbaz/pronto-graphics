@@ -14,24 +14,6 @@ loop {
 }
 ```
 
-Some rectangles?
-
-```rust
-let mut pg = Window::new(800, 600, "Rectangles!");
-pg.background_color(Color::DARK_GRAY);
-
-loop {
-    pg.fill_color(Color::RED);
-    pg.rectangle((50., 100.), 80., 60.);
-
-    pg.outline_color(Color::BLACK);
-    pg.fill_color((0x1D, 0x37, 0x85));
-    pg.square((300., 450.), 100.);
-
-    pg.update();
-}
-```
-
 Or a texture?
 
 ```rust
@@ -39,6 +21,19 @@ let mut pg = Window::new_fullscreen();
 let my_texture = pg.load_texture("my_texture.png").unwrap();
 loop {
     pg.texture((100., 250.), my_texture, 100., 150.);
+    
+    pg.update();
+}
+```
+
+How about some text?
+
+```rust
+let mut pg = Window::new(720, 480, "Text!");
+loop {
+    pg.font_color((0xEE, 0x44, 0x88));
+    pg.font_size(30);
+    pg.text((100., 100.), "Greetings!");
     
     pg.update();
 }
@@ -53,7 +48,7 @@ loop {
             println!("Action!");
     }
 
-    if pg.mouse_pressed(Button::RIGHT) {
+    if pg.mouse_pressed(Button::LEFT) {
         pg.circle(pg.mouse_position(), 16.);
     }
 
