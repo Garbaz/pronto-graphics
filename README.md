@@ -74,7 +74,8 @@ Loosely inspired by [Processing](https://processing.org/).
 ### Planned
 
 - [ ] Lines
-- [ ] Fonts
+- [ ] Arbitrary Shapes
+- [ ] Custom Fonts
 
 ## Usage
 
@@ -84,9 +85,3 @@ Since the library currently still is in an early stage, I haven't published it t
 [dependencies]
 pronto-graphics = {git = "https://github.com/Garbaz/pronto-graphics"}
 ```
-
-## Todos
-
-A few ideas of things that could be implemented or improved
-
-- 
