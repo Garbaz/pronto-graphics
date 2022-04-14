@@ -1,6 +1,6 @@
 use sfml::graphics::Color as SfmlColor;
 
-/// A object representing a color in RGBA format.
+/// A object representing a color in RGBA32 format.
 /// Red/Green/Blue/Alpha each range from 0 to 255.
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub struct Color {
@@ -29,7 +29,7 @@ impl Color {
             sfml_color: SfmlColor::rgba(red, green, blue, alpha),
         }
     }
-    
+
     /// Create a `Color` from an existing color with alpha set to `alpha`.
     /// # Examples
     /// ```
@@ -92,13 +92,15 @@ impl From<(u8, u8, u8, u8)> for Color {
 pub struct ColorState {
     pub fill_color: Color,
     pub outline_color: Color,
+    pub text_color: Color,
 }
 
 impl Default for ColorState {
     fn default() -> Self {
         Self {
-            fill_color: Color::WHITE,
+            fill_color: Color::BLACK,
             outline_color: Color::TRANSPARENT,
+            text_color: Color::BLACK,
         }
     }
 }

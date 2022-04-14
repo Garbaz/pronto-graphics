@@ -2,7 +2,7 @@ use std::{collections::VecDeque, process::exit};
 
 use sfml::{
     graphics::{
-        CircleShape, RectangleShape, RenderTarget, RenderWindow, Shape,
+        CircleShape, RectangleShape, RenderTarget, RenderWindow, Shape, Text,
         Texture as SfmlTexture, Transformable,
     },
     system::Clock,
@@ -11,15 +11,16 @@ use sfml::{
 
 use crate::{
     color::{Color, ColorState},
+    font::{default_font, init_default_font},
     input::InputState,
     shape::{RenderTask, ShapeStore, Shapes},
-    texture::{Texture, TEXTURES},
+    texture::{init_texture_array, texture_array, texture_array_add, Texture},
 };
 
 /// The core type of the Pronto Graphics library.
 /// All drawing and keyboard/mouse interaction happens through an instance of `Window`.
 /// It has to be updated every frame  with `.update()` for drawings to be rendered and the keyboard/mouse state to be updated.
-/// 
+///
 /// # Examples
 /// ```
 /// let mut pg = Window::new(800, 600, "Window Title"); // Create window
@@ -42,18 +43,17 @@ pub struct Window<'a> {
 }
 
 impl Window<'_> {
-    fn new_from_window(window: RenderWindow) -> Self {
-        unsafe {
-            if let None = TEXTURES {
-                TEXTURES = Some(Vec::new())
-            }
-        }
+    fn new_from_renderwindow(window: RenderWindow) -> Self {
+        init_texture_array();
+        init_default_font();
 
         let mut circle_shape = CircleShape::new(0., 32);
         circle_shape.set_outline_thickness(1.);
         let mut rectangle_shape = RectangleShape::new();
         rectangle_shape.set_outline_thickness(1.);
-        let texture_shape = RectangleShape::new();
+
+        let text = default_font()
+            .and_then(|default_font| Some(Text::new("", &default_font, 16)));
 
         Self {
             window,
@@ -64,7 +64,8 @@ impl Window<'_> {
             shape_store: ShapeStore {
                 circle: circle_shape,
                 rectangle: rectangle_shape,
-                texture: texture_shape,
+                texture: RectangleShape::new(),
+                text: text,
             },
             runtime_clock: Clock::start(),
             deltatime_clock: Clock::start(),
@@ -86,7 +87,7 @@ impl Window<'_> {
         window.set_vertical_sync_enabled(true);
         window.set_key_repeat_enabled(false);
 
-        Self::new_from_window(window)
+        Self::new_from_renderwindow(window)
     }
 
     /// Create a new fullscreen window.
@@ -102,7 +103,7 @@ impl Window<'_> {
         window.set_vertical_sync_enabled(true);
         window.set_key_repeat_enabled(false);
 
-        Self::new_from_window(window)
+        Self::new_from_renderwindow(window)
     }
 
     /// Has to be called every frame for drawings to appear on the screen and keyboard/mouse to be updated.
@@ -163,17 +164,24 @@ impl Window<'_> {
                     index,
                     width,
                     height,
-                } => unsafe {
-                    if let Some(textures) = &TEXTURES {
+                } => {
+                    if let Some(tex) = &texture_array(*index) {
                         let s = &mut self.shape_store.texture;
-                        let tex = &textures[*index];
                         s.set_texture(tex, false);
                         s.set_size((*width, *height));
                         // s.set_origin((*width / 2., *height / 2.));
                         s.set_position(*pos);
                         self.window.draw(s);
                     }
-                },
+                }
+                Shapes::Text { string } => {
+                    if let Some(t) = &mut self.shape_store.text {
+                        t.set_string(string);
+                        t.set_fill_color(color_state.text_color.into());
+                        t.set_position(*pos);
+                        self.window.draw(t);
+                    }
+                }
             }
         }
         self.render_queue.clear();
@@ -196,6 +204,18 @@ impl Window<'_> {
     /// The outline color is reset at the beginning of a new frame to a default value of `Color::TRANSPARENT`.
     pub fn outline_color<C: Into<Color>>(&mut self, color: C) {
         self.color_state.outline_color = color.into();
+    }
+
+    pub fn font_color<C: Into<Color>>(&mut self, color: C) {
+        self.color_state.text_color = color.into();
+    }
+
+    /// Set the font size for drawing text with `.text(...)`.
+    /// The font size does _not_ reset at the beginning of a new frame.
+    pub fn font_size(&mut self, size: u32) {
+        if let Some(text) = &mut self.shape_store.text {
+            text.set_character_size(size);
+        }
     }
 
     /// Draw a circle at position `pos` with radius `radius`.
@@ -262,7 +282,7 @@ impl Window<'_> {
         })
     }
 
-    /// Draw a texture `texture` at position `pos` with width of `width`, with the height according to the aspect ratio of the texture.
+    /// Draw a texture `texture` at position `pos` with width of `width`, and height according to the aspect ratio of the texture.
     /// The origin of the texture is at it's top left.
     /// Textures can be loaded with `.load_texture(...)`.
     /// # Examples
@@ -287,6 +307,30 @@ impl Window<'_> {
         })
     }
 
+    /// Draw text `string` at position `pos`.
+    /// The default font size is 16 and can be changed with `.font_size(...)`.
+    /// The default font color is `Color::BLACK` and can be changed with `.font_color(...)`.
+    /// Uses the default font built into the library (Processing Sans Pro)
+    /// or the font set with `.font(...)`.
+    /// # Examples
+    /// ```
+    /// let mut pg = Window::new(720, 480, "Window Title");
+    /// loop {
+    ///     pg.fill_color(Color::BLACK);
+    ///     pg.text((10., 10.), "Hello World!");
+    ///     pg.update();
+    /// }
+    /// ```
+    pub fn text(&mut self, pos: (f32, f32), string: &str) {
+        self.render_queue.push_back(RenderTask {
+            pos,
+            shape: Shapes::Text {
+                string: string.to_string(),
+            },
+            color_state: self.color_state.clone(),
+        })
+    }
+
     /// Whether the keyboard key `key` is currently held pressed.
     /// # Examples
     /// ```
@@ -298,7 +342,7 @@ impl Window<'_> {
         self.input_state.key_pressed(key)
     }
 
-    /// Whether they keyboard key `key` has just been pressed in this frame.
+    /// Whether the keyboard key `key` has just been pressed in this frame.
     /// # Examples
     /// ```
     /// if pg.key_just_pressed(Key::SPACE) {
@@ -369,7 +413,7 @@ impl Window<'_> {
     /// Load a texture from path `path`.
     /// A return value of `None` means that the texture could not be loaded.
     /// On success, returns a `Texture` object that can be passed to the `.texture(...)` function to draw the texture to the screen.
-    /// 
+    ///
     /// # Examples
     /// ```
     /// let mut pg = Window::new_fullscreen();
@@ -381,15 +425,6 @@ impl Window<'_> {
     /// }
     /// ```
     pub fn load_texture(&mut self, path: &str) -> Option<Texture> {
-        unsafe {
-            if let Some(textures) = &mut TEXTURES {
-                textures.push(SfmlTexture::from_file(path)?);
-                Some(Texture {
-                    index: textures.len() - 1,
-                })
-            } else {
-                None
-            }
-        }
+        texture_array_add(SfmlTexture::from_file(path)?)
     }
 }

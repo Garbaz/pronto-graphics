@@ -1,4 +1,4 @@
-use sfml::graphics::{CircleShape, RectangleShape};
+use sfml::graphics::{CircleShape, RectangleShape, Text};
 
 use crate::color::ColorState;
 
@@ -15,6 +15,9 @@ pub enum Shapes {
         width: f32,
         height: f32,
     },
+    Text {
+        string : String,
+    }
 }
 
 pub struct RenderTask {
@@ -27,4 +30,5 @@ pub struct ShapeStore<'a> {
     pub circle: CircleShape<'a>,
     pub rectangle: RectangleShape<'a>,
     pub texture: RectangleShape<'a>,
+    pub text: Option<Text<'a>>,
 }

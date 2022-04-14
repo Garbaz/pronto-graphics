@@ -3,6 +3,7 @@ mod input;
 mod shape;
 mod window;
 mod texture;
+mod font;
 pub use color::Color;
 pub use sfml::window::{mouse::Button, Key};
 pub use texture::Texture;

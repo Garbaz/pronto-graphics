@@ -61,26 +61,37 @@ loop {
 }
 ```
 
-## Idea
+## Premise
 
-A library for anyone who just wants to get some graphics on the screen, without having to faff about with the technical details of graphics libraries. Just create a window, and start drawing to it. Minimal setup, minimal bother, minimal interference with your code's structure.
+A library for anyone who just wants to get some graphics on the screen, without having to faff about with the technical details of proper graphics libraries. Just create a window, and start drawing to it. Minimal setup, minimal bother, minimal interference with your own code's structure.
 
 Loosely inspired by [Processing](https://processing.org/).
 
 ## Features
 
 - [X] Circle, Rectangles, Squares
-- [ ] Lines
 - [X] Textures
+- [X] Text
 - [X] Keyboard
 - [X] Mouse
 - [X] Doc comments
 
-### Usage
+### Planned
 
-Since the library currently still is in an early stage, I haven't published it to [crate.io](https://crates.io/) yet, but thanks to cargo being awesome, you can include it in your project like this:
+- [ ] Lines
+- [ ] Fonts
+
+## Usage
+
+Since the library currently still is in an early stage, I haven't published it to [crate.io](https://crates.io/) yet, but thanks to `cargo` being awesome, you can simply include it in your project like this for now:
 
 ```toml
 [dependencies]
 pronto-graphics = {git = "https://github.com/Garbaz/pronto-graphics"}
 ```
+
+## Todos
+
+A few ideas of things that could be implemented or improved
+
+- 

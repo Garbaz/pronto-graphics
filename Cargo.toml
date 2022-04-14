@@ -1,9 +1,12 @@
 [package]
 name = "pronto-graphics"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
+authors = ["Garbaz"]
+description = "Quick and easy graphics for Rust"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 sfml = "0.16.0"
+rust-embed="6.3.0"
