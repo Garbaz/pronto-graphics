@@ -65,6 +65,8 @@ Loosely inspired by [Processing](https://processing.org/).
 ## Install
 
 ```toml
+# Cargo.toml
+
 [dependencies]
 pronto-graphics = "0.2.1"
 ```
@@ -81,5 +83,9 @@ pronto-graphics = "0.2.1"
 ### Planned
 
 - [ ] Lines
-- [ ] Arbitrary Shapes
+- [ ] Rotation
 - [ ] Custom Fonts
+- [ ] Triangles
+- [ ] Arbitrary Shapes
+- [ ] Draw Customization (outline thickness/etc.)
+- [ ] Audio
