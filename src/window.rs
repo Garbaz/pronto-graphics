@@ -18,8 +18,8 @@ use crate::{
 };
 
 /// The core type of the Pronto Graphics library.
-/// All drawing and keyboard/mouse interaction happens through an instance of `Window`.
-/// It has to be updated every frame  with `.update()` for drawings to be rendered and the keyboard/mouse state to be updated.
+/// All drawing and keyboard/mouse interaction happens through an instance of [`Window`].
+/// It has to be updated every frame  with [`Window::update`] for drawings to be rendered and the keyboard/mouse state to be updated.
 ///
 /// # Examples
 /// ```
@@ -75,8 +75,8 @@ impl Window<'_> {
     }
 
     /// Create a new window of size (`width`, `height`) and with title `name`.
-    /// Can be directly drawn to with functions like `.circle(...)`
-    /// and has to be updated with `.update()`.
+    /// Can be directly drawn to with functions like [`Window::circle`]
+    /// and has to be updated with [`Window::update`].
     pub fn new(width: u32, height: u32, name: &str) -> Self {
         let mut window = RenderWindow::new(
             (width, height),
@@ -91,8 +91,8 @@ impl Window<'_> {
     }
 
     /// Create a new fullscreen window.
-    /// Can be directly drawn to with functions like `.circle(...)`
-    /// and has to be updated with `.update()`.
+    /// Can be directly drawn to with functions like [`Window::circle`]
+    /// and has to be updated with [`Window::update`].
     pub fn new_fullscreen() -> Self {
         let mut window = RenderWindow::new(
             VideoMode::desktop_mode(),
@@ -194,14 +194,14 @@ impl Window<'_> {
         self.background_color = color.into();
     }
 
-    /// Set the fill color for drawing shapes like `.circle(...)`.
-    /// The fill color is reset at the beginning of a new frame to a default value of `Color::WHITE`.
+    /// Set the fill color for drawing shapes like [`Window::circle`].
+    /// The fill color is reset at the beginning of a new frame to a default value of [`Color::WHITE`].
     pub fn fill_color<C: Into<Color>>(&mut self, color: C) {
         self.color_state.fill_color = color.into();
     }
 
-    /// Set the outline color for drawing shapes like `.circle(...)`.
-    /// The outline color is reset at the beginning of a new frame to a default value of `Color::TRANSPARENT`.
+    /// Set the outline color for drawing shapes like [`Window::circle`].
+    /// The outline color is reset at the beginning of a new frame to a default value of [`Color::TRANSPARENT`].
     pub fn outline_color<C: Into<Color>>(&mut self, color: C) {
         self.color_state.outline_color = color.into();
     }
@@ -210,7 +210,7 @@ impl Window<'_> {
         self.color_state.text_color = color.into();
     }
 
-    /// Set the font size for drawing text with `.text(...)`.
+    /// Set the font size for drawing text with [`Window::text`].
     /// The font size does _not_ reset at the beginning of a new frame.
     pub fn font_size(&mut self, size: u32) {
         if let Some(text) = &mut self.shape_store.text {
@@ -253,7 +253,7 @@ impl Window<'_> {
 
     /// Draw a texture `texture` at position `pos` with width and height of `(width, height)`.
     /// The origin of the texture is at it's top left.
-    /// Textures can be loaded with `.load_texture(...)`.
+    /// Textures can be loaded with [`Window::load_texture`].
     /// # Examples
     /// ```
     /// let mut pg = Window::new_fullscreen();
@@ -282,9 +282,10 @@ impl Window<'_> {
         })
     }
 
-    /// Draw a texture `texture` at position `pos` with width of `width`, and height according to the aspect ratio of the texture.
+    /// Draw a texture `texture` at position `pos` with width of `width`,
+    /// and height according to the aspect ratio of the texture.
     /// The origin of the texture is at it's top left.
-    /// Textures can be loaded with `.load_texture(...)`.
+    /// Textures can be loaded with [`Window::load_texture`].
     /// # Examples
     /// ```
     /// let mut pg = Window::new_fullscreen();
@@ -308,10 +309,10 @@ impl Window<'_> {
     }
 
     /// Draw text `string` at position `pos`.
-    /// The default font size is 16 and can be changed with `.font_size(...)`.
-    /// The default font color is `Color::BLACK` and can be changed with `.font_color(...)`.
+    /// The default font size is 16 and can be changed with [`Window::font_size`].
+    /// The default font color is [`Color::BLACK`] and can be changed with [`Window::font_color`].
     /// Uses the default font built into the library (Processing Sans Pro)
-    /// or the font set with `.font(...)`.
+    /// or the font set with [`Window::font`].
     /// # Examples
     /// ```
     /// let mut pg = Window::new(720, 480, "Window Title");
@@ -412,7 +413,7 @@ impl Window<'_> {
 
     /// Load a texture from path `path`.
     /// A return value of `None` means that the texture could not be loaded.
-    /// On success, returns a `Texture` object that can be passed to the `.texture(...)` function to draw the texture to the screen.
+    /// On success, returns a [`Texture`] object that can be passed to the [`Window::texture`] function to draw the texture to the screen.
     ///
     /// # Examples
     /// ```

@@ -8,7 +8,7 @@ pub struct Color {
 }
 
 impl Color {
-    /// Create a `Color` from `red`, `green` and `blue`.
+    /// Create a [`Color`] from `red`, `green` and `blue`.
     /// # Examples
     /// ```
     /// let color = Color::rgb(0x1D, 0x37, 0x85);
@@ -19,7 +19,7 @@ impl Color {
         }
     }
 
-    /// Create a `Color` from `red`, `green`, `blue` and `alpha`.
+    /// Create a [`Color`] from `red`, `green`, `blue` and `alpha`.
     /// # Examples
     /// ```
     /// let color = Color::rgba(0x1D, 0x37, 0x85, 127);
@@ -30,7 +30,7 @@ impl Color {
         }
     }
 
-    /// Create a `Color` from an existing color with alpha set to `alpha`.
+    /// Create a [`Color`] from an existing color with alpha set to `alpha`.
     /// # Examples
     /// ```
     /// let color = Color::BLUE.with_alpha(127);

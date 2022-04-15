@@ -1,6 +1,6 @@
 //! Not my finest bout of Rust coding, but the conbination of storing a file
-//! inside the library's binary with `RustEmbed` and SFML's
-//! `Font::from_memory` function being a tad picky, some hackery was required.
+//! inside the library's binary with [`RustEmbed`] and SFML's
+//! [`Font::from_memory`] function being a tad picky, some hackery was required.
 //! Though perhaps this could be done a bit cleaner at some point.
 
 use rust_embed::RustEmbed;
@@ -19,7 +19,7 @@ pub fn init_default_font() {
             TRIED_TO_LOAD_DEFAULT_FONT = true;
 
             // We have to create a static copy of the font data in memory,
-            // because otherwise `Font::from_memory` will quietly fail for unknown reasons.
+            // because otherwise [`Font::from_memory`] will quietly fail for unknown reasons.
             DEFAULT_FONT_BINARY_DATA =
                 DefaultFontFile::get("ProcessingSansPro-Regular.ttf")
                     .and_then(|binary| Some(binary.data.to_vec()));
