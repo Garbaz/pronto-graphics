@@ -62,6 +62,13 @@ A library for anyone who just wants to get some graphics on the screen, without 
 
 Loosely inspired by [Processing](https://processing.org/).
 
+## Install
+
+```toml
+[dependencies]
+pronto-graphics = "0.2.1"
+```
+
 ## Features
 
 - [X] Circle, Rectangles, Squares
@@ -76,12 +83,3 @@ Loosely inspired by [Processing](https://processing.org/).
 - [ ] Lines
 - [ ] Arbitrary Shapes
 - [ ] Custom Fonts
-
-## Usage
-
-Since the library currently still is in an early stage, I haven't published it to [crate.io](https://crates.io/) yet, but thanks to `cargo` being awesome, you can simply include it in your project like this for now:
-
-```toml
-[dependencies]
-pronto-graphics = {git = "https://github.com/Garbaz/pronto-graphics"}
-```
