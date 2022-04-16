@@ -78,6 +78,7 @@ pronto-graphics = "0.3.0"
 ## Features
 
 - [X] Circle, Rectangles, Squares
+- [X] Lines
 - [X] Textures
 - [X] Text
 - [X] Keyboard
@@ -86,7 +87,6 @@ pronto-graphics = "0.3.0"
 
 ### Planned
 
-- [ ] Lines
 - [ ] Rotation
 - [ ] Custom fonts
 - [ ] Triangles
