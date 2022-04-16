@@ -1,5 +1,7 @@
 # Pronto Graphics
 
+|| [__Docs.rs__](https://docs.rs/pronto-graphics/latest/pronto_graphics/) || [__Lib.rs__](https://lib.rs/crates/pronto-graphics) || [__Crates.io__](https://crates.io/crates/pronto-graphics/) ||
+
 You want some circles on the screen?
 
 ```rust
