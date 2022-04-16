@@ -94,3 +94,7 @@ pronto-graphics = "0.2.1"
 - [ ] Arbitrary Shapes
 - [ ] Draw Customization (outline thickness/etc.)
 - [ ] Audio
+
+## Contributions
+
+I'm no experiences Open-Saucer either, so don't hesitate with pull requests, just make sure to explain what you're adding or changing and to adequately add [doc comments](https://doc.rust-lang.org/reference/comments.html#doc-comments) to anything that will be exposed to the end-user.
