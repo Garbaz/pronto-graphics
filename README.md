@@ -72,7 +72,7 @@ Since Pronto Graphics uses [SFML](https://www.sfml-dev.org/), specifically the [
 # Cargo.toml
 
 [dependencies]
-pronto-graphics = "0.3.0"
+pronto-graphics = "0.3.1"
 ```
 
 ## Features
