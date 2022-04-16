@@ -88,6 +88,14 @@ fn main() {
             pg.text(pos, "Greetings!");
         }
 
+        // Set the line color from HSB, with the hue rotating through the colors.
+        pg.line_color(Color::from_hsb((60. * pg.time()) % 360., 1., 1.));
+
+        // Draw a bunch of lines.
+        pg.line((50., 500.), (50., 450.));
+        pg.line((50., 450.), (100., 500.));
+        pg.line((100., 475. + 25. * (5. * pg.time()).sin()), (150., 450.));
+
         // At the end of our frame, we have to update the window
         // for our drawings to appear on the screen and for the keyboard/mouse
         // states to be updated.

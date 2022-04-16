@@ -1,6 +1,6 @@
 [package]
 name = "pronto-graphics"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 authors = ["Garbaz"]
 description = "Quick and simple graphics for Rust"

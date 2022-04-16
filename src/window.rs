@@ -2,8 +2,9 @@ use std::{collections::VecDeque, process::exit};
 
 use sfml::{
     graphics::{
-        CircleShape, RectangleShape, RenderTarget, RenderWindow, Shape, Text,
-        Texture as SfmlTexture, Transformable,
+        CircleShape, PrimitiveType, RectangleShape, RenderTarget,
+        RenderWindow, Shape, Text, Texture as SfmlTexture, Transformable,
+        Vertex, VertexArray,
     },
     system::Clock,
     window::{mouse::Button, Event, Key, Style, VideoMode},
@@ -177,10 +178,22 @@ impl Window<'_> {
                 Shapes::Text { string } => {
                     if let Some(t) = &mut self.shape_store.text {
                         t.set_string(string);
-                        t.set_fill_color(color_state.text_color.into());
+                        t.set_fill_color(color_state.font_color.into());
                         t.set_position(*pos);
                         self.window.draw(t);
                     }
+                }
+                Shapes::Lines { coords } => {
+                    let mut va =
+                        VertexArray::new(PrimitiveType::LINES, coords.len());
+                    for (i, v) in coords.iter().enumerate() {
+                        va[i] = Vertex::with_pos_color(
+                            (*v).into(),
+                            color_state.line_color.into(),
+                        );
+                    }
+
+                    self.window.draw(&va);
                 }
             }
         }
@@ -190,6 +203,7 @@ impl Window<'_> {
 
     /// Set the background color of the window.
     /// The background color does _not_ reset at the beginning of a new frame.
+    /// The initial value for the background color is [`Color::LIGHT_GRAY`].
     pub fn background_color<C: Into<Color>>(&mut self, color: C) {
         self.background_color = color.into();
     }
@@ -206,12 +220,21 @@ impl Window<'_> {
         self.color_state.outline_color = color.into();
     }
 
+    /// Set the line color for drawing lines with [`Window::line`].
+    /// The line color is reset at the beginning of a new frame to a default value of [`Color::BLACK`].
+    pub fn line_color<C: Into<Color>>(&mut self, color: C) {
+        self.color_state.line_color = color.into();
+    }
+
+    /// Set the line color for drawing text with [`Window::text`].
+    /// The font color is reset at the beginning of a new frame to a default value of [`Color::BLACK`].
     pub fn font_color<C: Into<Color>>(&mut self, color: C) {
-        self.color_state.text_color = color.into();
+        self.color_state.font_color = color.into();
     }
 
     /// Set the font size for drawing text with [`Window::text`].
     /// The font size does _not_ reset at the beginning of a new frame.
+    /// The initial value for the font size is `16`.
     pub fn font_size(&mut self, size: u32) {
         if let Some(text) = &mut self.shape_store.text {
             text.set_character_size(size);
@@ -224,7 +247,7 @@ impl Window<'_> {
         self.render_queue.push_back(RenderTask {
             pos,
             shape: Shapes::Circle { radius },
-            color_state: self.color_state.clone(),
+            color_state: self.color_state,
         })
     }
 
@@ -234,7 +257,7 @@ impl Window<'_> {
         self.render_queue.push_back(RenderTask {
             pos,
             shape: Shapes::Rectangle { width, height },
-            color_state: self.color_state.clone(),
+            color_state: self.color_state,
         })
     }
 
@@ -247,7 +270,7 @@ impl Window<'_> {
                 width: size,
                 height: size,
             },
-            color_state: self.color_state.clone(),
+            color_state: self.color_state,
         })
     }
 
@@ -278,7 +301,7 @@ impl Window<'_> {
                 width: width,
                 height: height,
             },
-            color_state: self.color_state.clone(),
+            color_state: self.color_state,
         })
     }
 
@@ -304,7 +327,7 @@ impl Window<'_> {
                 width: width,
                 height: width / texture.aspect(),
             },
-            color_state: self.color_state.clone(),
+            color_state: self.color_state,
         })
     }
 
@@ -328,8 +351,32 @@ impl Window<'_> {
             shape: Shapes::Text {
                 string: string.to_string(),
             },
-            color_state: self.color_state.clone(),
+            color_state: self.color_state,
         })
+    }
+
+    /// Draw a line from position `from` to position `to`.
+    /// The line's color is set with [`Window::line_color`].
+    pub fn line(&mut self, from: (f32, f32), to: (f32, f32)) {
+        match self.render_queue.back_mut() {
+            Some(RenderTask {
+                shape: Shapes::Lines { coords },
+                color_state,
+                ..
+            }) if color_state.line_color == self.color_state.line_color => {
+                coords.push(from);
+                coords.push(to);
+            }
+            _ => {
+                self.render_queue.push_back(RenderTask {
+                    pos: (0., 0.),
+                    shape: Shapes::Lines {
+                        coords: vec![from, to],
+                    },
+                    color_state: self.color_state,
+                });
+            }
+        }
     }
 
     /// Whether the keyboard key `key` is currently held pressed.

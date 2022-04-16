@@ -17,6 +17,9 @@ pub enum Shapes {
     },
     Text {
         string : String,
+    },
+    Lines {
+        coords : Vec<(f32,f32)>,
     }
 }
 

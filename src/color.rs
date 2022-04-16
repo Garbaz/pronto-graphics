@@ -39,6 +39,26 @@ impl Color {
         Self::rgba(self.red(), self.green(), self.blue(), alpha)
     }
 
+    /// Create a [`Color`] from [HSB] values.
+    /// `hue` : Between 0 and 360.
+    /// `saturation` : Between 0 and 1.
+    /// `brightness`  : Between 0 and 1.
+    ///
+    /// [HSB]: https://en.wikipedia.org/wiki/HSL_and_HSV
+    pub fn from_hsb(hue: f32, saturation: f32, brightness: f32) -> Self {
+        let f = |n: f32| {
+            let k = (n + hue / 60.) % 6.;
+            brightness
+                - brightness * saturation * (0f32).max(k.min(4. - k).min(1.))
+        };
+
+        Color::rgb(
+            (255. * f(5.)) as u8,
+            (255. * f(3.)) as u8,
+            (255. * f(1.)) as u8,
+        )
+    }
+
     /// The `red` component of the color.
     pub fn red(&self) -> u8 {
         self.sfml_color.red()
@@ -88,11 +108,12 @@ impl From<(u8, u8, u8, u8)> for Color {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub struct ColorState {
     pub fill_color: Color,
     pub outline_color: Color,
-    pub text_color: Color,
+    pub line_color: Color,
+    pub font_color: Color,
 }
 
 impl Default for ColorState {
@@ -100,7 +121,8 @@ impl Default for ColorState {
         Self {
             fill_color: Color::BLACK,
             outline_color: Color::TRANSPARENT,
-            text_color: Color::BLACK,
+            line_color: Color::BLACK,
+            font_color: Color::BLACK,
         }
     }
 }

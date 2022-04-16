@@ -66,14 +66,13 @@ Loosely inspired by [Processing](https://processing.org/).
 
 ## Install
 
-Since Pronto Graphics uses [SFML](https://www.sfml-dev.org/), specifically the [SFML bindings for Rust](https://docs.rs/sfml/latest/sfml/index.html),
-it's prerequisites are [the same as the SFML Rust bindings](https://docs.rs/sfml/latest/sfml/index.html#prerequisites). This might change in future versions.
+Since Pronto Graphics uses [SFML](https://www.sfml-dev.org/), specifically the [SFML bindings for Rust](https://docs.rs/sfml/latest/sfml/index.html) for rendering, it's prerequisites are [the same as the SFML Rust bindings](https://docs.rs/sfml/latest/sfml/index.html#prerequisites), namely the for the [SFML library](https://www.sfml-dev.org/) to be installed. This might change in future versions.
 
 ```toml
 # Cargo.toml
 
 [dependencies]
-pronto-graphics = "0.2.1"
+pronto-graphics = "0.3.0"
 ```
 
 ## Features
@@ -89,11 +88,12 @@ pronto-graphics = "0.2.1"
 
 - [ ] Lines
 - [ ] Rotation
-- [ ] Custom Fonts
+- [ ] Custom fonts
 - [ ] Triangles
-- [ ] Arbitrary Shapes
-- [ ] Draw Customization (outline thickness/etc.)
+- [ ] Arbitrary shapes
+- [ ] Draw customization (outline thickness/etc.)
 - [ ] Audio
+- [ ] Caching/Batching of draw calls
 
 ## Contributions
 
