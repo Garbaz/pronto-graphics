@@ -8,7 +8,7 @@ use sfml::SfBox;
 /// The problem is, as far as I can tell, there is no way to tell Rust's lifetime rules that I just want to give
 /// an existing [`RectangleShape`] a reference to a texture for just the scope of one [`Window::texture`] call.
 /// Neither can I create a bundle of the Shape and it's Texture in one object to align their lifetimes.
-/// Therefore, to ensure than all Textures always outlive the Shape that potentionally is referecing them,
+/// Therefore, to ensure than all Textures always outlive the Shape that potentially is referencing them,
 /// I have to make the textures `static`. Hence, this ungodly bunch of code.
 /// If there is a prettier solution that I have overlooked, this should be changed.
 static mut TEXTURE_STORE: Option<Vec<SfBox<SfmlTexture>>> = None;

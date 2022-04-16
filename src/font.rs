@@ -1,4 +1,4 @@
-//! Not my finest bout of Rust coding, but the conbination of storing a file
+//! Not my finest bout of Rust coding, but the combination of storing a file
 //! inside the library's binary with [`RustEmbed`] and SFML's
 //! [`Font::from_memory`] function being a tad picky, some hackery was required.
 //! Though perhaps this could be done a bit cleaner at some point.

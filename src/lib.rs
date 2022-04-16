@@ -6,7 +6,7 @@
 //! like colors, line thickness and font, which can be set at any point and will affect all later draw calls,
 //! either until the end of the frame, or until changed (See the individual documentation for details).
 //! 
-//! ## Prerequsites
+//! ## Prerequisites
 //! 
 //! Since Pronto Graphics uses [SFML](https://www.sfml-dev.org/), specifically the [SFML bindings for Rust](https://docs.rs/sfml/latest/sfml/index.html),
 //! it's prerequisites are [the same as the SFML Rust bindings](https://docs.rs/sfml/latest/sfml/index.html#prerequisites).
