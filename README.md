@@ -66,6 +66,9 @@ Loosely inspired by [Processing](https://processing.org/).
 
 ## Install
 
+Since Pronto Graphics uses [SFML](https://www.sfml-dev.org/), specifically the [SFML bindings for Rust](https://docs.rs/sfml/latest/sfml/index.html),
+it's prerequisites are [the same as the SFML Rust bindings](https://docs.rs/sfml/latest/sfml/index.html#prerequisites). This might change in future versions.
+
 ```toml
 # Cargo.toml
 
