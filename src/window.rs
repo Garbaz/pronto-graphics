@@ -2,20 +2,24 @@ use std::{collections::VecDeque, process::exit};
 
 use sfml::{
     graphics::{
-        CircleShape, PrimitiveType, RectangleShape, RenderTarget,
-        RenderWindow, Shape, Text, Texture as SfmlTexture, Transformable,
-        Vertex, VertexArray,
+        CircleShape, Font as SfmlFont, PrimitiveType, RectangleShape,
+        RenderTarget, RenderWindow, Shape, Text, Texture as SfmlTexture,
+        Transformable, Vertex, VertexArray,
     },
     system::Clock,
     window::{mouse::Button, Event, Key, Style, VideoMode},
 };
 
 use crate::{
-    color::{Color, ColorState},
-    font::{default_font, init_default_font},
+    color::Color,
+    font::{
+        default_font, font_store, font_store_add, init_default_font,
+        init_font_store, Font,
+    },
     input::InputState,
+    render_parameters::RenderParameterState,
     shape::{RenderTask, ShapeStore, Shapes},
-    texture::{init_texture_array, texture_array, texture_array_add, Texture},
+    texture::{init_texture_store, texture_store, texture_store_add, Texture},
 };
 
 /// The core type of the Pronto Graphics library.
@@ -35,7 +39,8 @@ pub struct Window<'a> {
     input_state: InputState,
     render_queue: VecDeque<RenderTask>,
     background_color: Color,
-    color_state: ColorState,
+    font: Option<Font>,
+    render_parameter_state: RenderParameterState,
     shape_store: ShapeStore<'a>,
     deltatime_clock: Clock,
     deltatime: f32,
@@ -45,8 +50,9 @@ pub struct Window<'a> {
 
 impl Window<'_> {
     fn new_from_renderwindow(window: RenderWindow) -> Self {
-        init_texture_array();
+        init_texture_store();
         init_default_font();
+        init_font_store();
 
         let mut circle_shape = CircleShape::new(0., 32);
         circle_shape.set_outline_thickness(1.);
@@ -61,7 +67,8 @@ impl Window<'_> {
             input_state: InputState::new(),
             render_queue: VecDeque::new(),
             background_color: Color::LIGHT_GRAY,
-            color_state: Default::default(),
+            font: None,
+            render_parameter_state: Default::default(),
             shape_store: ShapeStore {
                 circle: circle_shape,
                 rectangle: rectangle_shape,
@@ -116,7 +123,7 @@ impl Window<'_> {
         self.deltatime = self.deltatime_clock.restart().as_seconds();
         self.runtime = self.runtime_clock.elapsed_time().as_seconds();
 
-        self.color_state = Default::default();
+        self.render_parameter_state = Default::default();
     }
 
     fn update_events(&mut self) {
@@ -139,7 +146,7 @@ impl Window<'_> {
             let RenderTask {
                 pos,
                 shape,
-                color_state,
+                render_parameter_state: color_state,
             } = task;
 
             match shape {
@@ -161,28 +168,6 @@ impl Window<'_> {
                     s.set_outline_color(color_state.outline_color.into());
                     self.window.draw(s);
                 }
-                Shapes::Texture {
-                    index,
-                    width,
-                    height,
-                } => {
-                    if let Some(tex) = &texture_array(*index) {
-                        let s = &mut self.shape_store.texture;
-                        s.set_texture(tex, false);
-                        s.set_size((*width, *height));
-                        // s.set_origin((*width / 2., *height / 2.));
-                        s.set_position(*pos);
-                        self.window.draw(s);
-                    }
-                }
-                Shapes::Text { string } => {
-                    if let Some(t) = &mut self.shape_store.text {
-                        t.set_string(string);
-                        t.set_fill_color(color_state.font_color.into());
-                        t.set_position(*pos);
-                        self.window.draw(t);
-                    }
-                }
                 Shapes::Lines { coords } => {
                     let mut va =
                         VertexArray::new(PrimitiveType::LINES, coords.len());
@@ -194,6 +179,36 @@ impl Window<'_> {
                     }
 
                     self.window.draw(&va);
+                }
+                Shapes::Texture {
+                    texture,
+                    width,
+                    height,
+                } => {
+                    if let Some(tex) = &texture_store(*texture) {
+                        let s = &mut self.shape_store.texture;
+                        s.set_texture(tex, false);
+                        s.set_size((*width, *height));
+                        // s.set_origin((*width / 2., *height / 2.));
+                        s.set_position(*pos);
+                        self.window.draw(s);
+                    }
+                }
+                Shapes::Text { string, font } => {
+                    if let Some(t) = &mut self.shape_store.text {
+                        let sfml_font = font
+                            .and_then(|font| font_store(font)) // Get custom font from font store
+                            .or(default_font()); // Or use the default font
+                        if let Some(sfml_font) = sfml_font {
+                            // If some kind of font was found, set it
+                            t.set_font(sfml_font)
+                        }
+                        t.set_character_size(color_state.font_size);
+                        t.set_string(string);
+                        t.set_fill_color(color_state.font_color.into());
+                        t.set_position(*pos);
+                        self.window.draw(t);
+                    }
                 }
             }
         }
@@ -211,34 +226,52 @@ impl Window<'_> {
     /// Set the fill color for drawing shapes like [`Window::circle`].
     /// The fill color is reset at the beginning of a new frame to a default value of [`Color::WHITE`].
     pub fn fill_color<C: Into<Color>>(&mut self, color: C) {
-        self.color_state.fill_color = color.into();
+        self.render_parameter_state.fill_color = color.into();
     }
 
     /// Set the outline color for drawing shapes like [`Window::circle`].
     /// The outline color is reset at the beginning of a new frame to a default value of [`Color::TRANSPARENT`].
     pub fn outline_color<C: Into<Color>>(&mut self, color: C) {
-        self.color_state.outline_color = color.into();
+        self.render_parameter_state.outline_color = color.into();
     }
 
     /// Set the line color for drawing lines with [`Window::line`].
     /// The line color is reset at the beginning of a new frame to a default value of [`Color::BLACK`].
     pub fn line_color<C: Into<Color>>(&mut self, color: C) {
-        self.color_state.line_color = color.into();
+        self.render_parameter_state.line_color = color.into();
     }
 
     /// Set the line color for drawing text with [`Window::text`].
     /// The font color is reset at the beginning of a new frame to a default value of [`Color::BLACK`].
     pub fn font_color<C: Into<Color>>(&mut self, color: C) {
-        self.color_state.font_color = color.into();
+        self.render_parameter_state.font_color = color.into();
     }
 
     /// Set the font size for drawing text with [`Window::text`].
-    /// The font size does _not_ reset at the beginning of a new frame.
-    /// The initial value for the font size is `16`.
+    /// The font size is reset at the beginning of a new frame to a default value of `16`.
     pub fn font_size(&mut self, size: u32) {
-        if let Some(text) = &mut self.shape_store.text {
-            text.set_character_size(size);
-        }
+        self.render_parameter_state.font_size = size;
+    }
+
+    /// Set the font for drawing text with [`Window::text`].
+    /// The font does _not_ reset at the beginning of a new frame.
+    /// Fonts can be loaded with [`Window::load_font`].
+    /// Initially or if a value of `None` is passed to this function,
+    /// a default font built into the library is used (Processing Sans Pro).
+    ///
+    /// # Examples
+    /// ```
+    /// let mut pg = Window::new_fullscreen();
+    /// let my_font = pg.load_font("MyFont.ttf").unwrap();
+    /// pg.font(Some(my_font));
+    /// loop {
+    ///     pg.text((20, 20), "This text is drawn in MyFont.");
+    ///
+    ///     pg.update();
+    /// }
+    /// ```
+    pub fn font(&mut self, font: Option<Font>) {
+        self.font = font
     }
 
     /// Draw a circle at position `pos` with radius `radius`.
@@ -247,7 +280,7 @@ impl Window<'_> {
         self.render_queue.push_back(RenderTask {
             pos,
             shape: Shapes::Circle { radius },
-            color_state: self.color_state,
+            render_parameter_state: self.render_parameter_state,
         })
     }
 
@@ -257,7 +290,7 @@ impl Window<'_> {
         self.render_queue.push_back(RenderTask {
             pos,
             shape: Shapes::Rectangle { width, height },
-            color_state: self.color_state,
+            render_parameter_state: self.render_parameter_state,
         })
     }
 
@@ -270,7 +303,7 @@ impl Window<'_> {
                 width: size,
                 height: size,
             },
-            color_state: self.color_state,
+            render_parameter_state: self.render_parameter_state,
         })
     }
 
@@ -297,11 +330,11 @@ impl Window<'_> {
         self.render_queue.push_back(RenderTask {
             pos,
             shape: Shapes::Texture {
-                index: texture.index,
-                width: width,
-                height: height,
+                texture,
+                width,
+                height,
             },
-            color_state: self.color_state,
+            render_parameter_state: self.render_parameter_state,
         })
     }
 
@@ -323,11 +356,11 @@ impl Window<'_> {
         self.render_queue.push_back(RenderTask {
             pos,
             shape: Shapes::Texture {
-                index: texture.index,
-                width: width,
+                texture,
+                width,
                 height: width / texture.aspect(),
             },
-            color_state: self.color_state,
+            render_parameter_state: self.render_parameter_state,
         })
     }
 
@@ -350,8 +383,9 @@ impl Window<'_> {
             pos,
             shape: Shapes::Text {
                 string: string.to_string(),
+                font: self.font,
             },
-            color_state: self.color_state,
+            render_parameter_state: self.render_parameter_state,
         })
     }
 
@@ -361,9 +395,11 @@ impl Window<'_> {
         match self.render_queue.back_mut() {
             Some(RenderTask {
                 shape: Shapes::Lines { coords },
-                color_state,
+                render_parameter_state: color_state,
                 ..
-            }) if color_state.line_color == self.color_state.line_color => {
+            }) if color_state.line_color
+                == self.render_parameter_state.line_color =>
+            {
                 coords.push(from);
                 coords.push(to);
             }
@@ -373,7 +409,7 @@ impl Window<'_> {
                     shape: Shapes::Lines {
                         coords: vec![from, to],
                     },
-                    color_state: self.color_state,
+                    render_parameter_state: self.render_parameter_state,
                 });
             }
         }
@@ -473,6 +509,26 @@ impl Window<'_> {
     /// }
     /// ```
     pub fn load_texture(&mut self, path: &str) -> Option<Texture> {
-        texture_array_add(SfmlTexture::from_file(path)?)
+        texture_store_add(SfmlTexture::from_file(path)?)
+    }
+
+    /// Load a font from path `path`.
+    /// A return value of `None` means that the font could not be loaded.
+    /// On success, returns a [`Font`] object that can be passed to the [`Window::font`] function
+    /// to set the font to be used for drawing text with [`Window::text`].
+    ///
+    /// # Examples
+    /// ```
+    /// let mut pg = Window::new_fullscreen();
+    /// let my_font = pg.load_font("MyFont.ttf").unwrap();
+    /// pg.font(Some(my_font));
+    /// loop {
+    ///     pg.text((20, 20), "This text is drawn in MyFont.");
+    ///
+    ///     pg.update();
+    /// }
+    /// ```
+    pub fn load_font(&mut self, path: &str) -> Option<Font> {
+        font_store_add(SfmlFont::from_file(path)?)
     }
 }

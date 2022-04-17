@@ -12,7 +12,7 @@ use sfml::SfBox;
 /// I have to make the textures `static`. Hence, this ungodly bunch of code.
 /// If there is a prettier solution that I have overlooked, this should be changed.
 static mut TEXTURE_STORE: Option<Vec<SfBox<SfmlTexture>>> = None;
-pub fn init_texture_array() {
+pub fn init_texture_store() {
     unsafe {
         if let None = TEXTURE_STORE {
             TEXTURE_STORE = Some(Vec::new());
@@ -20,17 +20,17 @@ pub fn init_texture_array() {
     }
 }
 
-pub fn texture_array(index: usize) -> Option<&'static SfBox<SfmlTexture>> {
+pub fn texture_store(texture: Texture) -> Option<&'static SfBox<SfmlTexture>> {
     unsafe {
         if let Some(textures) = &TEXTURE_STORE {
-            Some(&textures[index])
+            Some(&textures[texture.index])
         } else {
             None
         }
     }
 }
 
-pub fn texture_array_add(texture: SfBox<SfmlTexture>) -> Option<Texture> {
+pub fn texture_store_add(texture: SfBox<SfmlTexture>) -> Option<Texture> {
     unsafe {
         if let Some(textures) = &mut TEXTURE_STORE {
             textures.push(texture);
@@ -54,7 +54,7 @@ pub fn texture_array_add(texture: SfBox<SfmlTexture>) -> Option<Texture> {
 ///     pg.update();
 /// }
 /// ```
-/// 
+///
 /// [`Window::texture`]: crate::window::Window::texture
 /// [`Window::load_texture`]: crate::window::Window::load_texture
 #[derive(Clone, Copy)]
@@ -63,26 +63,16 @@ pub struct Texture {
 }
 
 impl Texture {
-    fn sfml_texture(&self) -> Option<&SfmlTexture> {
-        unsafe {
-            if let Some(textures) = &TEXTURE_STORE {
-                Some(&(*textures[self.index]))
-            } else {
-                None
-            }
-        }
-    }
-
     /// The width of the texture in pixels.
     pub fn width(&self) -> u32 {
-        self.sfml_texture()
+        texture_store(*self)
             .and_then(|t| Some(t.size().x))
             .unwrap_or(0)
     }
 
     /// The height of the texture in pixels.
     pub fn height(&self) -> u32 {
-        self.sfml_texture()
+        texture_store(*self)
             .and_then(|t| Some(t.size().y))
             .unwrap_or(0)
     }

@@ -1,6 +1,6 @@
 use sfml::graphics::{CircleShape, RectangleShape, Text};
 
-use crate::color::ColorState;
+use crate::{render_parameters::RenderParameterState, Font, Texture};
 
 pub enum Shapes {
     Circle {
@@ -11,22 +11,23 @@ pub enum Shapes {
         height: f32,
     },
     Texture {
-        index: usize,
+        texture: Texture,
         width: f32,
         height: f32,
     },
     Text {
-        string : String,
+        string: String,
+        font: Option<Font>,
     },
     Lines {
-        coords : Vec<(f32,f32)>,
-    }
+        coords: Vec<(f32, f32)>,
+    },
 }
 
 pub struct RenderTask {
     pub pos: (f32, f32),
     pub shape: Shapes,
-    pub color_state: ColorState,
+    pub render_parameter_state: RenderParameterState,
 }
 
 pub struct ShapeStore<'a> {

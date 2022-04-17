@@ -2,6 +2,12 @@
 
 || [__Docs.rs__](https://docs.rs/pronto-graphics/latest/pronto_graphics/) || [__Lib.rs__](https://lib.rs/crates/pronto-graphics) || [__Crates.io__](https://crates.io/crates/pronto-graphics/) ||
 
+A library for anyone who just wants to get some graphics on the screen, without having to faff about with the technical details of proper graphics libraries. Just create a window, and start drawing to it. Minimal setup, minimal bother, minimal interference with your own code's structure.
+
+Loosely inspired by [Processing](https://processing.org/).
+
+## Examples
+
 You want some circles on the screen?
 
 ```rust
@@ -41,7 +47,7 @@ loop {
 }
 ```
 
-Want to press some keys and click some buttons?
+Want to press some keys and click some stuff?
 
 ```rust
 let mut pg = Window::new_fullscreen();
@@ -58,21 +64,15 @@ loop {
 }
 ```
 
-## Premise
-
-A library for anyone who just wants to get some graphics on the screen, without having to faff about with the technical details of proper graphics libraries. Just create a window, and start drawing to it. Minimal setup, minimal bother, minimal interference with your own code's structure.
-
-Loosely inspired by [Processing](https://processing.org/).
-
 ## Install
 
-Since Pronto Graphics uses [SFML](https://www.sfml-dev.org/), specifically the [SFML bindings for Rust](https://docs.rs/sfml/latest/sfml/index.html) for rendering, it's prerequisites are [the same as the SFML Rust bindings](https://docs.rs/sfml/latest/sfml/index.html#prerequisites), namely the for the [SFML library](https://www.sfml-dev.org/) to be installed. This might change in future versions.
+Since Pronto Graphics uses [SFML](https://www.sfml-dev.org/) for rendering, specifically the [SFML bindings for Rust](https://docs.rs/sfml/latest/sfml/index.html) for rendering, it's prerequisites are [the same as the SFML Rust bindings](https://docs.rs/sfml/latest/sfml/index.html#prerequisites), namely for the [SFML library](https://www.sfml-dev.org/) to be installed. This might change in future versions.
 
 ```toml
 # Cargo.toml
 
 [dependencies]
-pronto-graphics = "0.3.1"
+pronto-graphics = "0.4.0"
 ```
 
 ## Features
@@ -84,17 +84,24 @@ pronto-graphics = "0.3.1"
 - [X] Keyboard
 - [X] Mouse
 - [X] Doc comments
+- [X] Custom fonts
 
 ### Planned
 
-- [ ] Rotation
-- [ ] Custom fonts
+- [ ] Transforms (Rotation, Origin, text alignment)
 - [ ] Triangles
 - [ ] Arbitrary shapes
-- [ ] Draw customization (outline thickness/etc.)
 - [ ] Audio
 - [ ] Caching/Batching of draw calls
+- [ ] Draw customization (outline thickness/etc.)
 
 ## Contributions
 
-I'm no experiences Open-Saucer either, so don't hesitate with pull requests, just make sure to explain what you're adding or changing and to adequately add [doc comments](https://doc.rust-lang.org/reference/comments.html#doc-comments) to anything that will be exposed to the end-user.
+I'm no experiences open saucer either, so don't hesitate with pull requests :)
+
+Just make sure to explain what you're adding or changing and to adequately add [doc comments](https://doc.rust-lang.org/reference/comments.html#doc-comments) to anything that will be exposed to the end-user.
+
+## Notes
+
+- Investigate whether it might be better for performance to create a new SFML object for each draw call, instead of reusing them.
+- Add separate examples for different features, the `hello-world.rs` is getting quite big.

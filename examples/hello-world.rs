@@ -19,6 +19,9 @@ fn main() {
     // Load a texture from a file.
     let texture = pg.load_texture("examples/test_texture.png").unwrap();
 
+    // Load a font from a file.
+    let font = pg.load_font("examples/Whisper-Regular.ttf").unwrap();
+
     loop {
         // Set the fill color for drawing shapes to blue.
         pg.fill_color(Color::BLUE);
@@ -69,6 +72,11 @@ fn main() {
             pg.fill_color(Color::RED);
         }
 
+        pg.font_color(Color::GREEN);
+        pg.font_size(40);
+        pg.font(Some(font));
+        pg.text((300., 50.), "Salutations!");
+
         // Draw a square with side lengths of 25 pixels.
         // Depending on what fill color has last been set above,
         // this square will either be green or red.
@@ -84,6 +92,8 @@ fn main() {
             pg.font_color((0xEE, 0x44, 0x88));
             // Set the font size to 30 pixels.
             pg.font_size(30);
+            // Set the font to the default font.
+            pg.font(None);
             // Draw the string "Greetings!" as position `pos`.
             pg.text(pos, "Greetings!");
         }

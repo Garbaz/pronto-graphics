@@ -40,12 +40,15 @@ impl Color {
     }
 
     /// Create a [`Color`] from [HSB] values.
-    /// `hue` : Between 0 and 360.
-    /// `saturation` : Between 0 and 1.
-    /// `brightness`  : Between 0 and 1.
+    ///
+    /// - `hue` : Between 0 and 360.
+    /// - `saturation` : Between 0 and 1.
+    /// - `brightness`  : Between 0 and 1.
     ///
     /// [HSB]: https://en.wikipedia.org/wiki/HSL_and_HSV
     pub fn from_hsb(hue: f32, saturation: f32, brightness: f32) -> Self {
+        // Based on https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_RGB_alternative
+
         let f = |n: f32| {
             let k = (n + hue / 60.) % 6.;
             brightness
@@ -86,7 +89,7 @@ impl Color {
     pub const DARK_GRAY: Color = Color::rgb(0x40, 0x40, 0x40);
     pub const LIGHT_GRAY: Color = Color::rgb(0xC0, 0xC0, 0xC0);
     pub const RED: Color = Color::rgb(0xFF, 0x00, 0x00);
-    pub const GREEN: Color = Color::rgb(0x00, 0xFF, 0xC0);
+    pub const GREEN: Color = Color::rgb(0x00, 0xFF, 0x00);
     pub const BLUE: Color = Color::rgb(0x00, 0x00, 0xFF);
 }
 
@@ -105,24 +108,5 @@ impl From<(u8, u8, u8)> for Color {
 impl From<(u8, u8, u8, u8)> for Color {
     fn from(rgb: (u8, u8, u8, u8)) -> Self {
         Self::rgba(rgb.0, rgb.1, rgb.2, rgb.3)
-    }
-}
-
-#[derive(Clone, Copy, PartialEq, Eq)]
-pub struct ColorState {
-    pub fill_color: Color,
-    pub outline_color: Color,
-    pub line_color: Color,
-    pub font_color: Color,
-}
-
-impl Default for ColorState {
-    fn default() -> Self {
-        Self {
-            fill_color: Color::BLACK,
-            outline_color: Color::TRANSPARENT,
-            line_color: Color::BLACK,
-            font_color: Color::BLACK,
-        }
     }
 }
