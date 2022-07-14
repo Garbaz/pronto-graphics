@@ -40,7 +40,7 @@ fn main() {
             pg.circle(pos, 16.);
         }
 
-        // Draw our texture at position `(10, 10)` with a width of 100 pixels.
+        // Draw our texture at position (10, 10) with a width of 150 pixels.
         // The texture's height will be deduced from the texture's aspect ratio.
         // I.e. the texture is not distorted.
         // If we want to set the height ourselves, we have to use `pg.texture(...)` (Note the missing `_`)
