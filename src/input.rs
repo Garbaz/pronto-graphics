@@ -86,31 +86,19 @@ impl InputState {
     }
 
     pub fn key_pressed(&self, key: Key) -> bool {
-        match self.key_state.get(&key) {
-            Some(true) => true,
-            _ => false,
-        }
+        matches!(self.key_state.get(&key), Some(true))
     }
 
     pub fn key_just_pressed(&self, key: Key) -> bool {
-        match self.key_state_delta.get(&key) {
-            Some(true) => true,
-            _ => false,
-        }
+        matches!(self.key_state_delta.get(&key), Some(true))
     }
 
     pub fn mouse_pressed(&self, key: Button) -> bool {
-        match self.mouse_state.get(&key.into()) {
-            Some(true) => true,
-            _ => false,
-        }
+        matches!(self.mouse_state.get(&key.into()), Some(true))
     }
 
     pub fn mouse_just_pressed(&self, key: Button) -> bool {
-        match self.mouse_state_delta.get(&key.into()) {
-            Some(true) => true,
-            _ => false,
-        }
+        matches!(self.mouse_state_delta.get(&key.into()), Some(true))
     }
 
     pub fn mouse_position(&self) -> (f32, f32) {

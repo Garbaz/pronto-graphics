@@ -26,7 +26,7 @@ pub fn init_default_font() {
             // because otherwise [`Font::from_memory`] will quietly fail for unknown reasons.
             DEFAULT_FONT_BINARY_DATA =
                 DefaultFontFile::get("ProcessingSansPro-Regular.ttf")
-                    .and_then(|binary| Some(binary.data.to_vec()));
+                    .map(|binary| binary.data.to_vec());
 
             // Try to initialize default font once. If this fails, we just don't show any text,
             // unless the user has loaded their own font.
@@ -57,7 +57,7 @@ pub fn default_font() -> Option<&'static SfBox<SfmlFont>> {
 static mut FONT_STORE: Option<Vec<SfBox<SfmlFont>>> = None;
 pub fn init_font_store() {
     unsafe {
-        if let None = FONT_STORE {
+        if FONT_STORE.is_none() {
             FONT_STORE = Some(Vec::new());
         }
     }
@@ -94,7 +94,7 @@ pub struct Font {
 impl Font {
     pub fn name(&self) -> String {
         font_store(*self)
-            .and_then(|f| Some(f.info().family))
-            .unwrap_or(String::from(""))
+            .map(|f| f.info().family)
+            .unwrap_or_else(|| String::from(""))
     }
 }

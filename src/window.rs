@@ -59,8 +59,8 @@ impl Window<'_> {
         let mut rectangle_shape = RectangleShape::new();
         rectangle_shape.set_outline_thickness(1.);
 
-        let text = default_font()
-            .and_then(|default_font| Some(Text::new("", &default_font, 16)));
+        let text =
+            default_font().map(|default_font| Text::new("", default_font, 16));
 
         Self {
             window,
@@ -73,7 +73,7 @@ impl Window<'_> {
                 circle: circle_shape,
                 rectangle: rectangle_shape,
                 texture: RectangleShape::new(),
-                text: text,
+                text,
             },
             runtime_clock: Clock::start(),
             deltatime_clock: Clock::start(),
@@ -197,8 +197,8 @@ impl Window<'_> {
                 Shapes::Text { string, font } => {
                     if let Some(t) = &mut self.shape_store.text {
                         let sfml_font = font
-                            .and_then(|font| font_store(font)) // Get custom font from font store
-                            .or(default_font()); // Or use the default font
+                            .and_then(font_store) // Get custom font from font store
+                            .or_else(default_font); // Or use the default font
                         if let Some(sfml_font) = sfml_font {
                             // If some kind of font was found, set it
                             t.set_font(sfml_font)

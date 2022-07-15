@@ -14,7 +14,7 @@ use sfml::SfBox;
 static mut TEXTURE_STORE: Option<Vec<SfBox<SfmlTexture>>> = None;
 pub fn init_texture_store() {
     unsafe {
-        if let None = TEXTURE_STORE {
+        if TEXTURE_STORE.is_none() {
             TEXTURE_STORE = Some(Vec::new());
         }
     }
@@ -65,16 +65,12 @@ pub struct Texture {
 impl Texture {
     /// The width of the texture in pixels.
     pub fn width(&self) -> u32 {
-        texture_store(*self)
-            .and_then(|t| Some(t.size().x))
-            .unwrap_or(0)
+        texture_store(*self).map(|t| t.size().x).unwrap_or(0)
     }
 
     /// The height of the texture in pixels.
     pub fn height(&self) -> u32 {
-        texture_store(*self)
-            .and_then(|t| Some(t.size().y))
-            .unwrap_or(0)
+        texture_store(*self).map(|t| t.size().y).unwrap_or(0)
     }
 
     /// The aspect ratio of the texture.
