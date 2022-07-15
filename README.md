@@ -66,7 +66,7 @@ loop {
 
 ## Install
 
-Since Pronto Graphics uses [SFML](https://www.sfml-dev.org/) for rendering, specifically the [SFML bindings for Rust](https://docs.rs/sfml/latest/sfml/index.html) for rendering, it's prerequisites are [the same as the SFML Rust bindings](https://docs.rs/sfml/latest/sfml/index.html#prerequisites), namely for the [SFML library](https://www.sfml-dev.org/) to be installed. This might change in future versions.
+Since Pronto Graphics uses [SFML](https://www.sfml-dev.org/) for rendering, specifically the [SFML bindings for Rust](https://docs.rs/sfml/latest/sfml/index.html), it's prerequisites are [identical to the SFML Rust bindings](https://docs.rs/sfml/latest/sfml/index.html#prerequisites), namely for the [SFML library](https://www.sfml-dev.org/) to be installed. This might possibly change in future versions.
 
 ```toml
 # Cargo.toml

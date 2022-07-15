@@ -40,14 +40,14 @@ fn main() {
             pg.circle(pos, 16.);
         }
 
-        // Draw our texture at position `(10, 10)` with a width of 100 pixels.
+        // Draw our texture at position (10, 10) with a width of 150 pixels.
         // The texture's height will be deduced from the texture's aspect ratio.
         // I.e. the texture is not distorted.
         // If we want to set the height ourselves, we have to use `pg.texture(...)` (Note the missing `_`)
         pg.texture_((10., 10.), texture, 150.);
 
         // React to the the left mouse button being pressed.
-        // As long as the button is held down, the code inside the `if` is executed.
+        // As long as the button is held down, the code inside the `if` is executed each frame.
         if pg.mouse_pressed(Button::LEFT) {
             // Set the fill color to blue, but with it's alpha set to 127, i.e. half-transparent.
             pg.fill_color(Color::GREEN.with_alpha(127));
@@ -71,16 +71,19 @@ fn main() {
         } else {
             pg.fill_color(Color::RED);
         }
-
+        
+        // Draw a square with side lengths of 25 pixels.
+        // Depending on what fill color has last been set this frame,
+        // this square will either be green or red.
+        pg.square((50., 300.), 25.);
+        
+        // Print "Salutations!" at (300,50), using the font we have loaded at the beginning.
+        // We set the font's color to green and the font's size to 40.
+        // To set the font back to the default built-in one, we call `pg.font(None)`.
         pg.font_color(Color::GREEN);
         pg.font_size(40);
         pg.font(Some(font));
         pg.text((300., 50.), "Salutations!");
-
-        // Draw a square with side lengths of 25 pixels.
-        // Depending on what fill color has last been set above,
-        // this square will either be green or red.
-        pg.square((50., 300.), 25.);
 
         {
             let pos = (
@@ -101,7 +104,7 @@ fn main() {
         // Set the line color from HSB, with the hue rotating through the colors.
         pg.line_color(Color::from_hsb((60. * pg.time()) % 360., 1., 1.));
 
-        // Draw a bunch of lines.
+        // And draw a bunch of lines.
         pg.line((50., 500.), (50., 450.));
         pg.line((50., 450.), (100., 500.));
         pg.line((100., 475. + 25. * (5. * pg.time()).sin()), (150., 450.));
